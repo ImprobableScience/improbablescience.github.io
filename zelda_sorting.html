@@ -1,0 +1,659 @@
+<html
+><!-- 2025 by Thomas Colthurst -->
+<!-- Original at https://thomaswc.com/2025.html -->
+
+<!-- Adapted 2026 by ImproableScience -->
+<!-- Made some Zelda-specific categories to entertain some fandom friends -->
+<!-- Thanks greatly to the folk who run https://zeldawiki.wiki -->
+<!-- I only made 20 categories of 20 because I'm lazy and also something something
+     400 is kind of like 40 for the 40th anniversary -->
+
+<!-- Released under a Creative Commons Share Alike with Attribution License -->
+<!-- See https://creativecommons.org/licenses/by-sa/4.0/ -->
+<head>
+
+
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>400 Zelda things for the 40th anniversary</title>
+    <style>
+        body {
+  background-color: white; /* Or #fff or #ffffff */
+}
+
+.bigbut {
+width:100%; height:100%; display:block;
+}
+
+.shake {
+  animation: shake 0.5s;
+  animation-iteration-count: 1;
+}
+
+.numCirc {
+    border-radius: 70%;
+    background: white; /* #fff; */
+    border: 2px solid red; /* #666; */
+    color: red; /* #666; */
+    text-align: center;
+}
+
+.red {
+  color: red;
+}
+
+.floating {
+    position: fixed;
+    z-index: 999;
+    background-color: lightblue;
+}
+
+#fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+@keyframes shake {
+  0% { transform: translateX(1px) rotate(0deg); }
+  10% { transform: translateX(-1px) rotate(-1deg); }
+  20% { transform: translateX(-3px) rotate(1deg); }
+  30% { transform: translateX(3px) rotate(0deg); }
+  40% { transform: translateX(1px) rotate(1deg); }
+  50% { transform: translateX(-1px) rotate(-1deg); }
+  60% { transform: translateX(-3px) rotate(0deg); }
+  70% { transform: translateX(3px) rotate(-1deg); }
+  80% { transform: translateX(-1px) rotate(1deg); }
+  90% { transform: translateX(1px) rotate(0deg); }
+  100% { transform: translateX(1px) rotate(-1deg); }
+}
+    </style>
+    </head><body>
+        <canvas id="fireworks"></canvas>
+<div class="floating">
+   Make 20 groups of 20!  (By combining two at a time.) &nbsp;
+   Score: <span id="score">0</span> &nbsp; Mistakes: <span id="mistakes">0</span> &nbsp;
+    <button type="button" id="deselect" style="" disabled="disabled" onclick="deselect()">Deselect</button>
+</div>
+<div style="padding-top: 16px; position: absolute" id="board"></div>
+
+    
+        <script>
+        // Bugs: 
+        // 1) Unicode not rendering properly inside buttons on Chrome.
+        // Feature requests:
+        // 1) Don't penalize already guessed.
+        
+        // Globals
+        const M = 20;  // Board size
+            
+        var score = 0;
+        var mistakes = 0;
+        
+        var selected = 0;  // The currently selected button, if any.
+        
+        var wordlist = [];  // Actually, a list of (word, category) pairs
+    
+
+        // The categories.
+        
+        var cats = {};
+            
+            // #1. 
+            cats["Rito"] = [
+                 "Revali", "Tulin", "Teba", "Raphica", "Kass",
+                 "Amali", "Fyson", "Genli", "Harth", "Kaneli", 
+                 "Penn", "Saki", "Pinnec", "Vence", "Molli",
+                 "Komali", "Medli", "Nekk", "Ilari", "Hoskit"];
+            
+            // #2
+            cats["Zora"] = [
+                "King Zora", "Ruto", "Lulu", "Mikau", "Ralis", 
+                "Rutela", "Mipha", "Muzu", "Sidon", "Bazz", 
+                "Yona", "Dorephan", "Gaddison", "Dradd", "Inawa", 
+                "Kushara", "Cadlan", "Qia", "Lago", "Seggin"];
+            
+            // #3.  Censored: Minuet of Forest (similar to AoC quest name)
+            cats["Music"] = [
+                "Zelda's Lullaby", "Wind's Requiem", "Wind God's Aria",  "Song of Birds", "Bolero of Fire", 
+                "Serenade of Water", "Requiem of Spirit", "Nocturne of Shadow", "Prelude of Light", "Ballad of the Wind Fish", 
+                "Manbo's Mambo", "Oath to Order", "New Wave Bossa Nova", "Elegy of Emptiness", "Song of Discovery",
+                "Ballad of the Goddess", "Farore's Courage", "Nayru's Wisdom", "Din's Power", "Tune of Ages"];
+
+            // #4.  
+            cats["Gelatinous Enemies"] = [
+                "Bit", "Blob", "Boss Bot", "Bulbul", "Chu Worm", 
+                "Chuchu", "Cukeman", "Electric Blob Queen", "Gel", "Giant Buzz Blob", 
+                "Hikkun", "Like Like", "Mad Jelly", "Myu", "Nokkun", 
+                "Phasing Gel", "Slime", "Stalfos Gel", "Tumblebot", "Zol", 
+            ];
+
+            
+            // #5
+            cats["Shops"] = [
+                "Anouki General Store", "Badge Market", "Beedle's", "Bomb Shop", "Business Scrub's Smoothies",
+                "Crazy Tracy's Health Spa", "Fang and Bone", "Gerudo Secret Club", "Hammerhead", "High Spirits Produce",
+                "Starlight Memories", "Lenzo's Pictography", "Linebeck Trading Company", "Lucky Treasure", "Mabe Ranch Co-op",
+                "Malo Mart", "Ravio's Shop", "Tusk & Talon", "Sera's Sundries", "Skyloft Bazaar",
+            ];
+
+            // #6
+            cats["Dungeons"] = [
+                "Vah Medoh", "Vah Naboris", "Vah Rudania", "Vah Ruta", "Desert Palace",
+                "Bottom of the Well", "Arbiter's Grounds", "Dragon Roost Cavern", "Explorer's Crypt", "Tower of the Gods",
+                "Forsaken Fortress", "Angler's Tunnel", "Wind Temple", "Ganon's Castle", "Ghost Ship",
+                "Jabu-Jabu's Belly", "Desma's Labyrinth", "Karahatag", "Kah Okeo", "Gerudo Arena",
+             ];
+
+             // #7.  
+             cats["EoW Side Quests"] = [
+                "A Curious Child", "Automaton Engineer Dampé", "Cotton-Candy Hunt", "Deliver the Grilled Fish!", "Explosions Galore!",
+                "Impa's Gift", "One Soldier Too Many", "Questioning the Local Cats", "Secret Chief Talks", "Snowball Magic", 
+                "The Great Fairy's Request", "Getting It Twisted", "Glide Path Trailblazer", "Ready? Set? Goron!", "Tornado Ghost?",
+                "Beetle Ballyhoo", "A Treat for My Person", "The Flying Tile", "Out of Bubble Kelp", "Elusive Tumbleweeds"
+
+
+             ]
+             
+             // #8.  
+             cats["Constructs"] = [
+                 "Captain", "Caretaker", "Crafter", "Culinary", "Decayed",
+                 "Flux", "Forbidden", "Forge", "Knight", "Maker",
+                 "Mineru's", "Mining", "Ranger", "Seized", "Smithing",
+                 "Soldier", "Steward", "Training", "Ultimate Weapon", "Vicious Flux",
+             ];
+
+              // #9.  Censored:  Triangle (Type of Number)
+              cats["Guardian Dieties"] = [
+                  "Lynels", "Great Deku Tree", "Lord Jabu-Jabu", "Volvagia", "Four Giants",
+                  "Valoo", "Cyclos", "Ordona", "Faron", "Eldin",
+                  "Lanayru", "Hylia", "Fierce Diety", "Satori", "Malanya",
+                  "Din", "Nayru", "Farore", "Ocean King", "Mountain Goddess"
+              ];
+              
+              // #10
+              cats["Decorations HW"] =[
+                 "Beautiful Aura", "Butterfly Makeup", "Dreamer Aura", "Farore's Aura", "Fierce Deity Facepaint",
+                 "Goron Facepaint", "Insect Aura", "Island Aura", "Koholint Aura", "Korok Aura",
+                 "Moon's Aura", "Musical Aura", "Pirate Aura", "Sheikah Facepaint", "Shell Aura",
+                 "Star Aura", "Swirly Cheeks", "Treasure Aura", "Twilight Aura", "Writer's Glasses"
+              ];
+              
+              // #11 Censored: Carrot (food item in totk)
+              cats["Four Swords Items"] = [
+                  "Bomb", "Boomerang", "Bow", "Fire Rod", "Lamp",
+                  "Magic Hammer", "Pegasus Boots", "Roc's Feather", "Shovel", "Slingshot",
+                  "Force Gem", "Small Key", "Blue Bracelet", "Bombos Medalion", "Four Sword",
+                  "Moon Pearl", "Heart Container", "Letter", "Purple Royal Jewel", "Quake Medallion"
+              ];
+              
+              // #12.  
+              cats["Plant Enemies"] = [
+                 "Deku Baba", "Mad Scrub", "Baba Serpent", "Big Deku Baba", "Link-Eating Plant",
+                 "Deku Like", "Twilit Parasite Diababa", "Goponga Flowers", "Kalle Demos", "Manhandla",
+                 "Mini Baba", "Shadow Deku Baba", "Quadro Baba", "Leever", "Pikit",
+                 "Piranha Plant", "Pokey", "Eye Plant", "Phytops", "Peahat"
+              ];
+              
+              // #13.  
+              cats["Things made with eggs"] = [
+                  "Campfire Egg", "Hard-Boiled Egg", "Yellow Dye", "Crab Omelet with Rice", "Curry Pilaf",
+                  "Egg Pudding", 	"Egg Tart", "Energizing Honey Crepe", "Fried Egg and Rice", "Gourmet Poultry Pilaf",
+                  "Mushroom Omelet", "Omelet", "Plain Crepe", "Poultry Pilaf", "Prime Poultry Pilaf", 
+                  "Vegetable Omelet", "Wildberry Crepe", "Cheesy Omelet", "Crunchy Fried Rice", "Dubious Food"
+              ]
+              
+              // #14.  Censored:  Shel Silverstein, Dr. Seuss (both also Poets)
+              cats["AoC Quests"] = [
+                  "\"Voe and You\" Is in Session", "At All Hours", "Bee Very Careful", "Curry Connoisseur", "Encouraging Tourism",
+                  "Battle-Tested Research", "Explosive Life Force", "Feast or Fiction?", "Birthday Waltz", "Glorious Ring",
+                  "Heartfelt Thanks", "It's Shakala Time", "Let's Dance", "My Beloved Yellow", "Superb Fish Dish",
+                  "The Deal with Seals", "Think Yourself Clever?", "What Do Guardians Taste Like?", "Veggie Vigor", "Zappy 'n' Bouncy"
+              ];
+              
+              // #15
+              cats["Lightroots"] = [
+                  "A-nehi", "Busus", "Gadohsi", "Iayusus", "Jadukakar",
+                  "Kasari", "Migo-o", "Narusis", "Oyimay", "Ramobnukas",
+                  "Sasag", "Takaruk", "Uogoj", "Worihas", "Yikot",
+                  "Zi-ner", "Kawatik", "Muzasu", "Ni-Iraram", "Nojoj"
+              ];
+              
+              // #16 Some of these really should ahve eggs
+              cats["Meals Without Eggs"] = [
+                  "Apple Pie", "Carrot Cake", "Carrot Stew", "Clam Chowder", "Crab Risotto",
+                  "Creamy Heart Soup", "Curry Rice", "Fish Pie", "Fish and Mushroom Skewer", "Fragrant Mushroom Sauté",
+                  "Fried Bananas", "Fruitcake", "Glazed Meat", "Gourmet Meat and Rice Bowl", "Herb Sauté",
+                  "Honey Candy", "Meaty Rice Balls", "Monster Cake", "Nutcake", "Salmon Meunière"
+              ];
+              
+              // #17
+              cats["Instrucments"] = [
+                   "Recorder", "Whistle", "Bell", "Flute", "Lute",
+                   "Ocarina", "Goddess's Harp", "Deku Pipes", "Zora Guitar", "Hawk Grass",
+                   "Makar's Violin", "Horse Call", "Horse Grass", "Maracas", "Sea Ukulele",
+                   "Wind Waker", "Dimitri's Flute", "Harp of Ages", "Instrument of the Sirens", "Fairy Ocarina"
+              ];
+              
+              // #18.  
+              cats["Game Names"] = [
+                    "The Legend of Zelda",
+                    "The Adventure of Link",
+                    "A Link to the Past",
+                    "Link's Awakening",
+                    "Ocarina of Time",
+                    "Majora's Mask",
+                    "Oracle of Seasons",
+                    "Oracle of Ages",
+                    "Four Swords",
+                    "The Wind Waker",
+                    "The Minish Cap",
+                    "Twilight Princess",
+                    "Phantom Hourglass",
+                    "Spirit Tracks",
+                    "Skyward Sword",
+                    "A Link Between Worlds",
+                    "Tri Force Heroes",
+                    "Breath of the Wild",
+                    "Tears of the Kingdom",
+                    "Echoes of Wisdom"
+              ];
+              
+              // #19.  
+              cats["Bosses"] = [
+                    "Agahnim", "Bongo Bongo", "Colgera", "Dongorongo", "Fraaz",
+                    "Ganon", "Ghirahim", "Gohma", "Kotake", "Dark Link",
+                    "Master Kohga", "Moragia", "Scaldera", "Vaati", "Demise",
+                    "Zant", "Yuga", "Kotome", "Queen Gibdo", "Mogryph"
+              ];
+              
+              
+              // #20.  
+              cats["Races"] = [
+                    "Anouki", "Dragons", "Fairies", "Gerudo", "Gorons",
+                    "Humans", "Hylians", "Kikwi", "Kokiri", "Koroks",
+                    "Lokomo", "Minish", "Mogmas", "Oocca", "Rito",
+                    "Parella", "Subrosians", "Twili", "Watanara", "Zora"
+              ];
+              
+       
+            // Functions
+            
+            function deselect() {
+              if (selected != 0) {
+                selected.style = "";
+                selected = 0;
+                document.getElementById("deselect").disabled = true;
+              }
+            }
+            
+            function stringToLightColor(str) {
+              let hash = 0;
+              for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+              }
+
+              const h = Math.abs(hash) % 360;
+              const s = 70;
+              const l = 80 + (Math.abs(hash) % 10); 
+
+              const lDev = l / 100;
+              const a = (s * Math.min(lDev, 1 - lDev)) / 100;
+  
+              const f = (n) => {
+                const k = (n + h / 30) % 12;
+                const color = lDev - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, "0");
+              };
+
+              return `#${f(0)}${f(8)}${f(4)}`;
+            }
+            
+            function getRandomHexColor() {
+              return '#' + Math.floor(Math.random() * 16777215).toString(16);
+            }
+            
+            function finishCategory(b) {
+              b.innerHTML  =  '<b>' + b.category + '</b>';
+              b.disabled = true;
+              b.style.background= stringToLightColor(b.category);
+            }
+            
+            function checkCategories() {
+              const wordDict = new Map();
+              // Check that each category has 20 entries.
+              for (const [key, value] of Object.entries(cats)) {
+                if (value.length < 20) {
+                  alert(`Entry for ${key} has length ${value.length}`);
+                }
+                for (let i = 0; i < 20; i++) {
+                  wordlist.push([value[i], key]);
+                  if (wordDict.has(value[i])) {
+                      alert(`Duplicate word ${value[i]}`);
+                  }
+                  else {
+                      wordDict.set(value[i], true);
+                  }
+                }
+              }
+            }
+            
+            function shuffleArray(array) {
+              for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+              }
+            }
+            
+            function saveState() {
+                localStorage.clear();
+                
+                localStorage.setItem('score', score + '');
+                localStorage.setItem('mistakes', mistakes + '');
+                
+                var t = document.getElementById('the_table');
+                for (let i = 0; i < t.rows.length; i++) {
+                  let row = t.rows[i];
+                  for (let j = 0; j < row.cells.length; j++) {
+                    let cell = row.cells[j];
+                    let button = cell.firstChild;
+                    localStorage.setItem(`${i}_${j}_category`, button.category);
+                    localStorage.setItem(`${i}_${j}_cluster`, JSON.stringify(button.cluster));
+                    localStorage.setItem(`${i}_${j}_innerHTML`, button.innerHTML);
+                    localStorage.setItem(`${i}_${j}_title`, button.title);
+                  }
+                }
+                
+            }
+            
+            function putWordsInBoard() {
+              shuffleArray(wordlist);
+              var currentWordIndex = 0;
+              var table = document.getElementById("the_table");
+              for (let i = 0, row; row = table.rows[i]; i++) {
+                for (let j = 0, col; col = row.cells[j]; j++) {
+                  var button = col.firstElementChild;
+                  // button.pos = currentWordIndex;
+                  button.textContent = wordlist[currentWordIndex][0];
+                  button.category = wordlist[currentWordIndex][1];
+                  button.cluster = [button.textContent];
+                  currentWordIndex += 1;
+                }
+              }
+            }
+            
+            function startFireworks() {
+              const canvas = document.getElementById('fireworks');
+              const ctx = canvas.getContext('2d');
+              let w, h;
+              let particles = [];
+              let fireworks = [];
+
+              function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+              }
+              window.addEventListener('resize', resize);
+              resize();
+
+              class Firework {
+                constructor() {
+                    this.x = Math.random() * w;
+                    this.y = h;
+                    this.tx = Math.random() * w;
+                    this.ty = Math.random() * (h / 2);
+                    this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    this.speed = 2 + Math.random() * 2;
+                    this.angle = Math.atan2(this.ty - this.y, this.tx - this.x);
+                    this.vx = Math.cos(this.angle) * this.speed;
+                    this.vy = Math.sin(this.angle) * this.speed;
+                    this.exploded = false;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.vy < 0 && this.y < this.ty) {
+                        this.explode();
+                    } else if (this.vy > 0 && this.y > this.ty) { // Should technically not happen with simple upward movement
+                         this.explode();
+                    }
+                }
+
+                explode() {
+                    this.exploded = true;
+                    for (let i = 0; i < 50; i++) {
+                        particles.push(new Particle(this.x, this.y, this.color));
+                    }
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+              }
+
+              class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 3;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.015 + 0.005;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.05; // gravity
+                    this.alpha -= this.decay;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+              }
+
+              function loop() {
+                // Clear with a trail effect
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+                ctx.fillRect(0, 0, w, h);
+                ctx.globalCompositeOperation = 'lighter';
+
+                // Launch new firework randomly
+                if (Math.random() < 0.05) {
+                    fireworks.push(new Firework());
+                }
+
+                // Update and draw fireworks
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    fireworks[i].update();
+                    fireworks[i].draw();
+                    if (fireworks[i].exploded) {
+                        fireworks.splice(i, 1);
+                    }
+                }
+
+                // Update and draw particles
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].alpha <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+
+                requestAnimationFrame(loop);
+              }
+
+              loop();
+            }
+            
+            function setUpBoard() {
+              // Just sets up the dom elements; does not put words in them.
+              var b = document.getElementById("board");   
+              const table = document.createElement('table');
+              table.id = 'the_table';
+              for (let i = 0; i < M; i++) {
+                const tr = document.createElement('tr');
+                tr.classList.add('.row');
+                for (let j = 0; j < M; j++) {
+                   const td = document.createElement('td');
+                   td.class = "bigbut";
+                   const button = document.createElement('button');
+                   button.class = "bigbut"
+                   button.onclick = function() {
+                       if (selected == button) {
+                         deselect();
+                         return;
+                       }
+                       button.style = "filter: invert(100%)";
+                       
+                       if (selected == 0) {
+                           selected = button;
+                           document.getElementById("deselect").disabled = false;
+                           return;
+                       }
+                       
+                       document.getElementById("deselect").disabled = true;
+
+                       if (button.category == selected.category) {
+                         
+                         firstbut = button;
+                         secondbut = selected;
+                         
+                         // Deselect
+                         selected.style = "";
+                         button.style = "";
+                         selected = 0;
+                         score = score + 1;
+                         
+                         // Merge
+                         firstbut.cluster = firstbut.cluster.concat(secondbut.cluster);
+                         // console.log(firstbut.cluster);
+                         if (firstbut.cluster.length == 2) {
+                           firstbut.innerHTML = '<b>' + firstbut.cluster.join('; ') + '</b>';
+                         } else {
+                           firstbut.innerHTML = '<b>' + firstbut.cluster.slice(0, 2).join(', ') + ', ... <span class="red">[' + firstbut.cluster.length + ']</span></b>';
+                           firstbut.title = firstbut.cluster.join('\n');
+                         }
+                         if (firstbut.cluster.length == 20) {
+                             finishCategory(firstbut);
+                         }
+                         
+                         document.getElementById("score").textContent = score;
+                         // Remove the button for the eliminated word.
+                         secondbut.title = '';
+                         // if (currentWordIndex < wordlist.length) {
+                         //  secondbut.textContent = wordlist[currentWordIndex][0];
+                         //  secondbut.category = wordlist[currentWordIndex][1];
+                         // secondbut.cluster = [secondbut.textContent];
+                         //  currentWordIndex += 1;
+                         // } else {
+                             secondbut.textContent = '';
+                             secondbut.disabled = true;
+                             
+                             // Remove not just the button but the entire <td>.
+                             secondbut.parentElement.remove();
+                        // }
+                         
+                       } else {
+                         mistakes = mistakes + 1;
+                         document.getElementById("mistakes").textContent = mistakes;
+                         // Shake it
+                         button.classList.add('shake');
+                         selected.classList.add('shake');
+                         
+                         button.addEventListener('animationend', () => {
+                           button.classList.remove('shake');
+                           button.style = "";
+                         }, { once: true });
+  
+                         old_selected = selected;
+                         old_selected.addEventListener('animationend', () => {
+                           old_selected.classList.remove('shake');
+                           old_selected.style = "";
+                         }, { once: true });
+  
+                         selected = 0;
+                       }
+                       saveState();
+                       if (score == 1980) {
+                           window.alert("You win!!");
+                           startFireworks();
+                       }
+                   };
+                   td.appendChild(button);
+                   tr.appendChild(td);
+                }
+                table.appendChild(tr);
+              }
+              
+              document.getElementById("board").appendChild(table);
+            }
+            
+            function loadState() {
+                s = localStorage.getItem('score');
+                if (s == null) {
+                    putWordsInBoard();
+                    return;
+                }
+                score = Number(s);
+                document.getElementById("score").textContent = score;
+                
+                s = localStorage.getItem('mistakes');
+                if (s == null) {
+                    putWordsInBoard();
+                    return;
+                }
+                mistakes = Number(s);
+                document.getElementById("mistakes").textContent = mistakes;
+                
+                var currentWordIndex = 0;
+                var table = document.getElementById("the_table");
+                var cells_to_remove = [];
+                for (let i = 0, row; row = table.rows[i]; i++) {
+                  for (let j = 0, col; col = row.cells[j]; j++) {
+                    var button = col.firstElementChild;
+                    // button.pos = currentWordIndex;
+                    button.category = localStorage.getItem(`${i}_${j}_category`);
+                    button.cluster = JSON.parse(localStorage.getItem(`${i}_${j}_cluster`));
+                    if (Array.isArray(button.cluster) && button.cluster.length == 20) {
+                        finishCategory(button);
+                    }
+                    button.innerHTML = localStorage.getItem(`${i}_${j}_innerHTML`);
+                    button.title = localStorage.getItem(`${i}_${j}_title`);
+                    currentWordIndex += 1;
+                    if (button.innerHTML == '') {
+                        // No word here, remove the whole <td>
+                        cells_to_remove.push(col);
+                    }
+                  }
+                }
+                for (let i = 0; i < cells_to_remove.length; i++) {
+                    cells_to_remove[i].remove();
+                }
+            }
+            
+            checkCategories();
+            setUpBoard();
+            loadState();
+        </script>
+
+
+</body></html>
