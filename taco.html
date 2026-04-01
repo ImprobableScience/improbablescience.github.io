@@ -53,8 +53,8 @@
 <script>
 	function taconator() {
 		var meat = [
-			"Ground Beef", "Chicken", "Carne Asada", "Chorizo", "Lengua", "Jackfruit",
-         "Pulled pork"
+			"ground beef", "chicken", "carne asada", "chorizo", "lengua", "jackfruit",
+         "pulled pork"
    	];
       meatchoice = meat[Math.floor(Math.random() * meat.length)];
 
@@ -66,8 +66,8 @@
 			"roasted veggies", "pico de gallo", "shredded cabbage", "bell peppers",
          "Hateno cheese", "monster extract", "goron spice", "mango", "corn",
    	];
-      // max toppings is 3, min is 1
-		numtoppings = Math.floor(Math.random() * 3) + 1;
+      // max toppings is 4, min is 1
+		numtoppings = Math.floor(Math.random() * 4) + 1;
       selected_toppings = [];
       for (let i = 0; i < numtoppings; i++) {
 			selected_toppings.push(toppings[Math.floor(Math.random() * toppings.length)]);
