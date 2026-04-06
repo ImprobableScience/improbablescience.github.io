@@ -1,0 +1,557 @@
+<html>
+<!-- 2025 by Thomas Colthurst -->
+<!-- Original at https://thomaswc.com/2025.html -->
+
+<!-- Adapted 2026 by ImproableScience -->
+<!-- Made some Zelda-specific categories to entertain some fandom friends -->
+<!-- Thanks greatly to the folk who run https://zeldawiki.wiki -->
+<!-- My kid said the other one was too hard because he didn't want to read lightroot names so this one's for him -->
+
+<!-- Released under a Creative Commons Share Alike with Attribution License -->
+<!-- See https://creativecommons.org/licenses/by-sa/4.0/ -->
+<head>
+
+
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>100 Zelda things to sort (EASY MODE)</title>
+    <style>
+        body {
+  background-color: white; /* Or #fff or #ffffff */
+}
+
+.bigbut {
+width:100%; height:100%; display:block;
+}
+
+.shake {
+  animation: shake 0.5s;
+  animation-iteration-count: 1;
+}
+
+.numCirc {
+    border-radius: 70%;
+    background: white; /* #fff; */
+    border: 2px solid red; /* #666; */
+    color: red; /* #666; */
+    text-align: center;
+}
+
+.red {
+  color: red;
+}
+
+.floating {
+    position: fixed;
+    z-index: 999;
+    background-color: lightblue;
+}
+
+#fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+@keyframes shake {
+  0% { transform: translateX(1px) rotate(0deg); }
+  10% { transform: translateX(-1px) rotate(-1deg); }
+  20% { transform: translateX(-3px) rotate(1deg); }
+  30% { transform: translateX(3px) rotate(0deg); }
+  40% { transform: translateX(1px) rotate(1deg); }
+  50% { transform: translateX(-1px) rotate(-1deg); }
+  60% { transform: translateX(-3px) rotate(0deg); }
+  70% { transform: translateX(3px) rotate(-1deg); }
+  80% { transform: translateX(-1px) rotate(1deg); }
+  90% { transform: translateX(1px) rotate(0deg); }
+  100% { transform: translateX(1px) rotate(-1deg); }
+}
+    </style>
+    </head><body>
+<h1>Zelda Sorting Game (EASY MODE)</h1>
+<p>An easier version of my <a href="https://improbablescience.github.io/zelda_sorting.html">Zelda Sorting Game</a> for my kid and anyone else who wants a quick game.  Adapted from <a href="https://thomaswc.com/2025.html">2025</a>.</p>
+<div class=""></div>
+        <canvas id="fireworks"></canvas>
+<div class="floating">
+   Make 10 groups of 10!  (By combining two at a time.) &nbsp;
+   Score: <span id="score">0</span> &nbsp; Mistakes: <span id="mistakes">0</span> &nbsp;
+    <button type="button" id="deselect" style="" disabled="disabled" onclick="deselect()">Deselect</button>
+</div>
+<div style="padding-top: 16px; position: absolute" id="board"></div>
+
+    
+        <script>
+        // Bugs: 
+        // 1) Unicode not rendering properly inside buttons on Chrome.
+        // Feature requests:
+        // 1) Don't penalize already guessed.
+        
+        // Globals
+        const M = 10;  // Board size
+        const board_size = 10;  // Board size
+            
+        var score = 0;
+        var mistakes = 0;
+        
+        var selected = 0;  // The currently selected button, if any.
+        
+        var wordlist = [];  // Actually, a list of (word, category) pairs
+    
+
+        // The categories.
+        
+        var cats = {};
+            
+        // #1.
+        cats["Enemies"] = [
+            "Ignizols", "Chuchus", "Bokoblins", "Lizalfos", "Wizzrobes",
+            "Stalfos", "Keese", "Moblins", "Darknuts", "Wolfos"
+        ];
+
+        // #2.
+        cats["Bosses"] = [
+            "Colgera", "Mucktorok", "Queen Gibdo", "King Gleeok", "Master Kohga",
+            "Null", "Seized Construct", "Volvagia", "Gohma", "Ghirahim"
+        ];
+
+        // #3.
+        cats["Races"] = [
+            "Gerudo", "Gorons",
+            "Sheikah", "Hylians",
+            "Kikwi", "Zonai",
+            "Koroks", "Minish",
+            "Rito", "Zora"
+        ];
+
+        // #4.
+        cats["Food"] = [
+            "Cactus Smoothie", "Noble Pursuit", "Baked Apple", "Curry Rice", "Fruitcake",
+            "Mushroom Skewer", "Golden Smoothie", "Salmon Meunière", "Pumpkin Soup", "Honey Candy"
+        ];
+
+        // #6.
+        cats["Items"] = [
+            "Master Sword", "Green Rupee", "Red Potion", "Tri Rod", "Bomb",
+            "Frog Ring", "Piece of Heart", "Fairy Bottle", "Boss Key", "Boomerang"
+        ];
+
+        // #6.
+        cats["Recurring Characters"] = [
+            "Link", "Princess Zelda", "Ganon", "Impa", "Beedle",
+            "Din", "Dampé", "Farore", "Narayu", "Hylia",
+        ];
+
+        // #7. Games my kid knows
+        cats["Game Names"] = [
+            "Link's Awakening",
+            "Ocarina of Time",
+            "The Wind Waker",
+            "Twilight Princess",
+            "Spirit Tracks",
+            "Skyward Sword",
+            "A Link Between Worlds",
+            "Breath of the Wild",
+            "Tears of the Kingdom",
+            "Echoes of Wisdom"
+        ];
+
+        // #8.
+        cats["Outfits"] = [
+            "Dancing Clothes", "Climbing Set", "Frostbite Set", "Cat Clothes", "Stamp Outfit",
+            "Royal Travel Attire", "Champion's Leathers", "Desert Voe", "Snowquill", "Royal Guard Armour"
+        ];
+
+        // #9.
+        cats["Places"] = [
+            "Hyrule Castle", "Great Plateau", "Outset Island", "The Depths", "Lost Woods",
+            "Kakariko", "Eldin Mountain", "Zora's Domain", "Hebra Mountain", "Gerudo Desert"
+        ];
+
+        // #10.
+        cats["Companions"] = [
+            "Tri", "Navi", "Epona", "Fi", "Midna",
+            "Ezlo", "Linebeck", "King of Red Lions", "Terrako", "Proxi"
+        ];
+
+              
+       
+            // Functions
+            
+            function deselect() {
+              if (selected != 0) {
+                selected.style = "";
+                selected = 0;
+                document.getElementById("deselect").disabled = true;
+              }
+            }
+            
+            function stringToLightColor(str) {
+              let hash = 0;
+              for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+              }
+
+              const h = Math.abs(hash) % 360;
+              const s = 70;
+              const l = 80 + (Math.abs(hash) % 10); 
+
+              const lDev = l / 100;
+              const a = (s * Math.min(lDev, 1 - lDev)) / 100;
+  
+              const f = (n) => {
+                const k = (n + h / 30) % 12;
+                const color = lDev - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, "0");
+              };
+
+              return `#${f(0)}${f(8)}${f(4)}`;
+            }
+            
+            function getRandomHexColor() {
+              return '#' + Math.floor(Math.random() * 16777215).toString(16);
+            }
+            
+            function finishCategory(b) {
+              b.innerHTML  =  '<b>' + b.category + '</b>';
+              b.disabled = true;
+              b.style.background= stringToLightColor(b.category);
+            }
+            
+            function checkCategories() {
+              const wordDict = new Map();
+              // Check that each category has cat_size entries. (was 45, then 20, now 10)
+              for (const [key, value] of Object.entries(cats)) {
+                if (value.length < board_size) {
+                  alert(`Entry for ${key} has length ${value.length}`);
+                }
+                for (let i = 0; i < board_size; i++) {
+                  wordlist.push([value[i], key]);
+                  if (wordDict.has(value[i])) {
+                      alert(`Duplicate word ${value[i]}`);
+                  }
+                  else {
+                      wordDict.set(value[i], true);
+                  }
+                }
+              }
+            }
+            
+            function shuffleArray(array) {
+              for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+              }
+            }
+            
+            function saveState() {
+                localStorage.clear();
+                
+                localStorage.setItem('score', score + '');
+                localStorage.setItem('mistakes', mistakes + '');
+                
+                var t = document.getElementById('the_table');
+                for (let i = 0; i < t.rows.length; i++) {
+                  let row = t.rows[i];
+                  for (let j = 0; j < row.cells.length; j++) {
+                    let cell = row.cells[j];
+                    let button = cell.firstChild;
+                    localStorage.setItem(`${i}_${j}_category`, button.category);
+                    localStorage.setItem(`${i}_${j}_cluster`, JSON.stringify(button.cluster));
+                    localStorage.setItem(`${i}_${j}_innerHTML`, button.innerHTML);
+                    localStorage.setItem(`${i}_${j}_title`, button.title);
+                  }
+                }
+                
+            }
+            
+            function putWordsInBoard() {
+              shuffleArray(wordlist);
+              var currentWordIndex = 0;
+              var table = document.getElementById("the_table");
+              for (let i = 0, row; row = table.rows[i]; i++) {
+                for (let j = 0, col; col = row.cells[j]; j++) {
+                  var button = col.firstElementChild;
+                  // button.pos = currentWordIndex;
+                  button.textContent = wordlist[currentWordIndex][0];
+                  button.category = wordlist[currentWordIndex][1];
+                  button.cluster = [button.textContent];
+                  currentWordIndex += 1;
+                }
+              }
+            }
+            
+            function startFireworks() {
+              const canvas = document.getElementById('fireworks');
+              const ctx = canvas.getContext('2d');
+              let w, h;
+              let particles = [];
+              let fireworks = [];
+
+              function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+              }
+              window.addEventListener('resize', resize);
+              resize();
+
+              class Firework {
+                constructor() {
+                    this.x = Math.random() * w;
+                    this.y = h;
+                    this.tx = Math.random() * w;
+                    this.ty = Math.random() * (h / 2);
+                    this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    this.speed = 2 + Math.random() * 2;
+                    this.angle = Math.atan2(this.ty - this.y, this.tx - this.x);
+                    this.vx = Math.cos(this.angle) * this.speed;
+                    this.vy = Math.sin(this.angle) * this.speed;
+                    this.exploded = false;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.vy < 0 && this.y < this.ty) {
+                        this.explode();
+                    } else if (this.vy > 0 && this.y > this.ty) { // Should technically not happen with simple upward movement
+                         this.explode();
+                    }
+                }
+
+                explode() {
+                    this.exploded = true;
+                    for (let i = 0; i < 50; i++) {
+                        particles.push(new Particle(this.x, this.y, this.color));
+                    }
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+              }
+
+              class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 3;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.015 + 0.005;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.05; // gravity
+                    this.alpha -= this.decay;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+              }
+
+              function loop() {
+                // Clear with a trail effect
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+                ctx.fillRect(0, 0, w, h);
+                ctx.globalCompositeOperation = 'lighter';
+
+                // Launch new firework randomly
+                if (Math.random() < 0.05) {
+                    fireworks.push(new Firework());
+                }
+
+                // Update and draw fireworks
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    fireworks[i].update();
+                    fireworks[i].draw();
+                    if (fireworks[i].exploded) {
+                        fireworks.splice(i, 1);
+                    }
+                }
+
+                // Update and draw particles
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].alpha <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+
+                requestAnimationFrame(loop);
+              }
+
+              loop();
+            }
+            
+            function setUpBoard() {
+              // Just sets up the dom elements; does not put words in them.
+              var b = document.getElementById("board");   
+              const table = document.createElement('table');
+              table.id = 'the_table';
+              for (let i = 0; i < board_size; i++) {
+                const tr = document.createElement('tr');
+                tr.classList.add('.row');
+                for (let j = 0; j < board_size; j++) {
+                   const td = document.createElement('td');
+                   td.class = "bigbut";
+                   const button = document.createElement('button');
+                   button.class = "bigbut"
+                   button.onclick = function() {
+                       if (selected == button) {
+                         deselect();
+                         return;
+                       }
+                       button.style = "filter: invert(100%)";
+                       
+                       if (selected == 0) {
+                           selected = button;
+                           document.getElementById("deselect").disabled = false;
+                           return;
+                       }
+                       
+                       document.getElementById("deselect").disabled = true;
+
+                       if (button.category == selected.category) {
+                         
+                         firstbut = button;
+                         secondbut = selected;
+                         
+                         // Deselect
+                         selected.style = "";
+                         button.style = "";
+                         selected = 0;
+                         score = score + 1;
+                         
+                         // Merge
+                         firstbut.cluster = firstbut.cluster.concat(secondbut.cluster);
+                         // console.log(firstbut.cluster);
+                         if (firstbut.cluster.length == 2) {
+                           firstbut.innerHTML = '<b>' + firstbut.cluster.join('; ') + '</b>';
+                         } else {
+                           firstbut.innerHTML = '<b>' + firstbut.cluster.slice(0, 2).join(', ') + ', ... <span class="red">[' + firstbut.cluster.length + ']</span></b>';
+                           firstbut.title = firstbut.cluster.join('\n');
+                         }
+                         if (firstbut.cluster.length == 20) {
+                             finishCategory(firstbut);
+                         }
+                         
+                         document.getElementById("score").textContent = score;
+                         // Remove the button for the eliminated word.
+                         secondbut.title = '';
+                         // if (currentWordIndex < wordlist.length) {
+                         //  secondbut.textContent = wordlist[currentWordIndex][0];
+                         //  secondbut.category = wordlist[currentWordIndex][1];
+                         // secondbut.cluster = [secondbut.textContent];
+                         //  currentWordIndex += 1;
+                         // } else {
+                             secondbut.textContent = '';
+                             secondbut.disabled = true;
+                             
+                             // Remove not just the button but the entire <td>.
+                             secondbut.parentElement.remove();
+                        // }
+                         
+                       } else {
+                         mistakes = mistakes + 1;
+                         document.getElementById("mistakes").textContent = mistakes;
+                         // Shake it
+                         button.classList.add('shake');
+                         selected.classList.add('shake');
+                         
+                         button.addEventListener('animationend', () => {
+                           button.classList.remove('shake');
+                           button.style = "";
+                         }, { once: true });
+  
+                         old_selected = selected;
+                         old_selected.addEventListener('animationend', () => {
+                           old_selected.classList.remove('shake');
+                           old_selected.style = "";
+                         }, { once: true });
+  
+                         selected = 0;
+                       }
+                       saveState();
+                       if (score == 1980) {
+                           window.alert("You win!!");
+                           startFireworks();
+                       }
+                   };
+                   td.appendChild(button);
+                   tr.appendChild(td);
+                }
+                table.appendChild(tr);
+              }
+              
+              document.getElementById("board").appendChild(table);
+            }
+            
+            function loadState() {
+                s = localStorage.getItem('score');
+                if (s == null) {
+                    putWordsInBoard();
+                    return;
+                }
+                score = Number(s);
+                document.getElementById("score").textContent = score;
+                
+                s = localStorage.getItem('mistakes');
+                if (s == null) {
+                    putWordsInBoard();
+                    return;
+                }
+                mistakes = Number(s);
+                document.getElementById("mistakes").textContent = mistakes;
+                
+                var currentWordIndex = 0;
+                var table = document.getElementById("the_table");
+                var cells_to_remove = [];
+                for (let i = 0, row; row = table.rows[i]; i++) {
+                  for (let j = 0, col; col = row.cells[j]; j++) {
+                    var button = col.firstElementChild;
+                    // button.pos = currentWordIndex;
+                    button.category = localStorage.getItem(`${i}_${j}_category`);
+                    button.cluster = JSON.parse(localStorage.getItem(`${i}_${j}_cluster`));
+                    if (Array.isArray(button.cluster) && button.cluster.length == 20) {
+                        finishCategory(button);
+                    }
+                    button.innerHTML = localStorage.getItem(`${i}_${j}_innerHTML`);
+                    button.title = localStorage.getItem(`${i}_${j}_title`);
+                    currentWordIndex += 1;
+                    if (button.innerHTML == '') {
+                        // No word here, remove the whole <td>
+                        cells_to_remove.push(col);
+                    }
+                  }
+                }
+                for (let i = 0; i < cells_to_remove.length; i++) {
+                    cells_to_remove[i].remove();
+                }
+            }
+            
+            checkCategories();
+            setUpBoard();
+            loadState();
+        </script>
+
+
+</body></html>
