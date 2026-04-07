@@ -74,17 +74,17 @@ width:100%; height:100%; display:block;
 }
     </style>
     </head><body>
-<div style="padding: 2px">
-<h1>Zelda Sorting Game (EASY MODE)</h1>
-<p>An easier version of my <a href="https://improbablescience.github.io/zelda_sorting.html">Zelda Sorting Game</a> for my kid and anyone else who wants a quick game.  Adapted from <a href="https://thomaswc.com/2025.html">2025</a> by <a href="https://www.tumblr.com/improbablescience">ImprobableScience</a>.</p>
-</div>
         <canvas id="fireworks"></canvas>
 <div class="floating">
    Make 10 groups of 10!  (By combining two at a time.) &nbsp;
    Score: <span id="score">0</span> &nbsp; Mistakes: <span id="mistakes">0</span> &nbsp;
     <button type="button" id="deselect" style="" disabled="disabled" onclick="deselect()">Deselect</button>
 </div>
-<div style="padding-top: 28px; position: absolute" id="board"></div>
+<div style="padding-top: 28px" id="board"></div>
+<div style="padding: 2px; position: absolute">
+<h1>Zelda Sorting Game (EASY MODE)</h1>
+<p>An easier version of my <a href="https://improbablescience.github.io/zelda_sorting.html">Zelda Sorting Game</a> for my kid and anyone else who wants a quick game.  Adapted from <a href="https://thomaswc.com/2025.html">2025</a> by <a href="https://www.tumblr.com/improbablescience">ImprobableScience</a>.</p>
+</div>
 
     
         <script>
@@ -253,8 +253,8 @@ width:100%; height:100%; display:block;
             function saveState() {
                 localStorage.clear();
                 
-                localStorage.setItem('score', score + '');
-                localStorage.setItem('mistakes', mistakes + '');
+                localStorage.setItem('ez_score', score + '');
+                localStorage.setItem('ez_mistakes', mistakes + '');
                 
                 var t = document.getElementById('the_table');
                 for (let i = 0; i < t.rows.length; i++) {
@@ -262,10 +262,10 @@ width:100%; height:100%; display:block;
                   for (let j = 0; j < row.cells.length; j++) {
                     let cell = row.cells[j];
                     let button = cell.firstChild;
-                    localStorage.setItem(`${i}_${j}_category`, button.category);
-                    localStorage.setItem(`${i}_${j}_cluster`, JSON.stringify(button.cluster));
-                    localStorage.setItem(`${i}_${j}_innerHTML`, button.innerHTML);
-                    localStorage.setItem(`${i}_${j}_title`, button.title);
+                    localStorage.setItem(`ez_${i}_${j}_category`, button.category);
+                    localStorage.setItem(`ez_${i}_${j}_cluster`, JSON.stringify(button.cluster));
+                    localStorage.setItem(`ez_${i}_${j}_innerHTML`, button.innerHTML);
+                    localStorage.setItem(`ez_${i}_${j}_title`, button.title);
                   }
                 }
                 
@@ -511,7 +511,7 @@ width:100%; height:100%; display:block;
             }
             
             function loadState() {
-                s = localStorage.getItem('score');
+                s = localStorage.getItem('ez_score');
                 if (s == null) {
                     putWordsInBoard();
                     return;
@@ -519,7 +519,7 @@ width:100%; height:100%; display:block;
                 score = Number(s);
                 document.getElementById("score").textContent = score;
                 
-                s = localStorage.getItem('mistakes');
+                s = localStorage.getItem('ez_mistakes');
                 if (s == null) {
                     putWordsInBoard();
                     return;
@@ -534,13 +534,13 @@ width:100%; height:100%; display:block;
                   for (let j = 0, col; col = row.cells[j]; j++) {
                     var button = col.firstElementChild;
                     // button.pos = currentWordIndex;
-                    button.category = localStorage.getItem(`${i}_${j}_category`);
-                    button.cluster = JSON.parse(localStorage.getItem(`${i}_${j}_cluster`));
+                    button.category = localStorage.getItem(`ez_${i}_${j}_category`);
+                    button.cluster = JSON.parse(localStorage.getItem(`ez_${i}_${j}_cluster`));
                     if (Array.isArray(button.cluster) && button.cluster.length == board_size) {
                         finishCategory(button);
                     }
-                    button.innerHTML = localStorage.getItem(`${i}_${j}_innerHTML`);
-                    button.title = localStorage.getItem(`${i}_${j}_title`);
+                    button.innerHTML = localStorage.getItem(`ez_${i}_${j}_innerHTML`);
+                    button.title = localStorage.getItem(`ez_${i}_${j}_title`);
                     currentWordIndex += 1;
                     if (button.innerHTML == '') {
                         // No word here, remove the whole <td>
