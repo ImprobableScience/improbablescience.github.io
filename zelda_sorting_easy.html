@@ -70,9 +70,10 @@ width:100%; height:100%; display:block;
 }
     </style>
     </head><body>
+<div class="ttop">
 <h1>Zelda Sorting Game (EASY MODE)</h1>
 <p>An easier version of my <a href="https://improbablescience.github.io/zelda_sorting.html">Zelda Sorting Game</a> for my kid and anyone else who wants a quick game.  Adapted from <a href="https://thomaswc.com/2025.html">2025</a>.</p>
-<div class=""></div>
+</div>
         <canvas id="fireworks"></canvas>
 <div class="floating">
    Make 10 groups of 10!  (By combining two at a time.) &nbsp;
@@ -128,7 +129,7 @@ width:100%; height:100%; display:block;
         // #4.
         cats["Food"] = [
             "Cactus Smoothie", "Noble Pursuit", "Baked Apple", "Curry Rice", "Fruitcake",
-            "Mushroom Skewer", "Golden Smoothie", "Salmon Meunière", "Pumpkin Soup", "Honey Candy"
+            "Mushroom Skewer", "Golden Smoothie", "Salmon Meuniere", "Pumpkin Soup", "Honey Candy"
         ];
 
         // #6.
@@ -140,7 +141,7 @@ width:100%; height:100%; display:block;
         // #6.
         cats["Recurring Characters"] = [
             "Link", "Princess Zelda", "Ganon", "Impa", "Beedle",
-            "Deku Tree", "Dampé", "Tingle", "Malon", "Hylia",
+            "Deku Tree", "Dampe", "Tingle", "Malon", "Hylia",
         ];
 
         // #7. Games my kid knows
@@ -450,7 +451,7 @@ width:100%; height:100%; display:block;
                            firstbut.innerHTML = '<b>' + firstbut.cluster.slice(0, 2).join(', ') + ', ... <span class="red">[' + firstbut.cluster.length + ']</span></b>';
                            firstbut.title = firstbut.cluster.join('\n');
                          }
-                         if (firstbut.cluster.length == 20) {
+                         if (firstbut.cluster.length == board_size) {
                              finishCategory(firstbut);
                          }
                          
@@ -531,7 +532,7 @@ width:100%; height:100%; display:block;
                     // button.pos = currentWordIndex;
                     button.category = localStorage.getItem(`${i}_${j}_category`);
                     button.cluster = JSON.parse(localStorage.getItem(`${i}_${j}_cluster`));
-                    if (Array.isArray(button.cluster) && button.cluster.length == 20) {
+                    if (Array.isArray(button.cluster) && button.cluster.length == board_size) {
                         finishCategory(button);
                     }
                     button.innerHTML = localStorage.getItem(`${i}_${j}_innerHTML`);
